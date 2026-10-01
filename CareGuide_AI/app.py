@@ -1,7 +1,7 @@
 import streamlit as st
 
 from config.settings import APP_NAME, APP_TAGLINE
-from rag.pipeline import answer_with_rag
+from rag.pipeline import answer_with_rag, get_knowledge_base_status
 
 st.set_page_config(
     page_title=APP_NAME,
@@ -38,7 +38,6 @@ if st.button("Ask CareGuide AI", type="primary"):
 
                 if sources:
                     st.markdown("### Sources")
-
                     for index, source in enumerate(sources, start=1):
                         st.markdown(
                             f"**{index}. {source['title']}**  \n"
@@ -48,4 +47,16 @@ if st.button("Ask CareGuide AI", type="primary"):
 
             except Exception as exc:
                 st.error("CareGuide AI could not process the request.")
-                st.caption(str(exc))
+                st.exception(exc)
+
+with st.expander("Knowledge base status"):
+    status = get_knowledge_base_status()
+    st.write(f"Documents found: **{status['documents']}**")
+    st.write(f"Chunks created: **{status['chunks']}**")
+    st.write(f"Knowledge base path: `{status['path']}`")
+
+    if status["documents"] == 0:
+        st.warning(
+            "No knowledge-base documents were found. "
+            "Make sure the knowledge_base folder and its .md files are committed to GitHub."
+        )
