@@ -1,20 +1,20 @@
 from pathlib import Path
 
 
-def load_documents(knowledge_base_path: str = "knowledge_base"):
-    """
-    Load Markdown knowledge documents.
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+DEFAULT_KB_PATH = PROJECT_ROOT / "knowledge_base"
 
-    Each document uses a simple metadata header:
-    TITLE:
-    PUBLISHER:
-    URL:
-    CATEGORY:
-    UPDATED:
 
-    The remaining text is treated as the knowledge content.
+def load_documents(knowledge_base_path=None):
     """
-    root = Path(knowledge_base_path)
+    Load Markdown files from the project knowledge_base directory.
+
+    The path is resolved from this Python file, not from the process
+    working directory. This makes the RAG system reliable on Streamlit Cloud.
+    """
+    root = Path(knowledge_base_path) if knowledge_base_path else DEFAULT_KB_PATH
+    root = root.resolve()
+
     documents = []
 
     if not root.exists():
@@ -37,17 +37,17 @@ def load_documents(knowledge_base_path: str = "knowledge_base"):
         content_lines = []
 
         for line in text.splitlines():
-            if ":" in line and line.split(":", 1)[0].strip().upper() in {
-                "TITLE",
-                "PUBLISHER",
-                "URL",
-                "CATEGORY",
-                "UPDATED",
-            }:
-                key, value = line.split(":", 1)
-                metadata[key.strip().lower()] = value.strip()
-            else:
-                content_lines.append(line)
+            stripped = line.strip()
+
+            if ":" in stripped:
+                key, value = stripped.split(":", 1)
+                key = key.strip().upper()
+
+                if key in {"TITLE", "PUBLISHER", "URL", "CATEGORY", "UPDATED"}:
+                    metadata[key.lower()] = value.strip()
+                    continue
+
+            content_lines.append(line)
 
         content = "\n".join(content_lines).strip()
 

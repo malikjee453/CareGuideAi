@@ -1,5 +1,9 @@
 from agents.llm_client import generate_response
-from rag.retriever import retrieve
+from rag.retriever import retrieve, knowledge_base_status
+
+
+def get_knowledge_base_status():
+    return knowledge_base_status()
 
 
 def _build_context(results):
@@ -25,7 +29,7 @@ def _unique_sources(results):
 
     for item in results:
         metadata = item["metadata"]
-        url = metadata.get("url", "")
+        url = metadata.get("url", "").strip()
 
         if not url or url in seen:
             continue
@@ -50,8 +54,7 @@ def answer_with_rag(query: str):
         return {
             "answer": (
                 "I could not find relevant information in the current "
-                "CareGuide knowledge base. Please try a different question "
-                "or consult a qualified healthcare professional."
+                "CareGuide knowledge base. Please try a different question."
             ),
             "sources": [],
         }
@@ -61,29 +64,29 @@ def answer_with_rag(query: str):
     system_prompt = """
 You are CareGuide AI, a healthcare information assistant.
 
-Answer using ONLY the supplied knowledge-base context.
+Use ONLY the supplied CareGuide knowledge-base context.
 
-Important rules:
-- Do not diagnose the user.
+Rules:
+- Do not diagnose.
 - Do not present yourself as a doctor.
-- Do not invent facts that are not supported by the context.
-- If the context does not answer the question, say so.
-- Do not give personalized treatment instructions.
-- For potentially urgent symptoms or situations, advise appropriate urgent
-  or emergency medical evaluation.
-- Explain medical information in clear, understandable language.
-- Keep the answer reasonably concise.
-- Do not create fake citations or sources.
+- Do not invent medical facts.
+- Do not claim information is supported by a source unless it appears in the context.
+- If the context does not answer the question, clearly say that.
+- Do not provide personalized prescribing or treatment decisions.
+- If the question describes potentially serious symptoms, recommend appropriate
+  urgent or emergency medical evaluation.
+- Use clear, understandable language.
+- Keep the answer concise but useful.
 """
 
     user_prompt = f"""
 User question:
 {query}
 
-Knowledge-base context:
+CareGuide knowledge-base context:
 {context}
 
-Write a clear educational answer based on the context above.
+Answer the user's question using the context above.
 """
 
     answer = generate_response(
