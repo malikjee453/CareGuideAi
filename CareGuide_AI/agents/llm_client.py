@@ -1,29 +1,21 @@
 from groq import Groq
-
 from config.settings import GROQ_API_KEY
 
-MODEL_NAME = "openai/gpt-oss-120b"
+client = Groq(
+    api_key=GROQ_API_KEY
+)
 
-client = Groq(api_key=GROQ_API_KEY)
 
+def generate_response(system_prompt, user_prompt):
 
-def generate_response(
-    system_prompt: str,
-    user_prompt: str,
-) -> str:
     response = client.chat.completions.create(
-        model=MODEL_NAME,
+        model="openai/gpt-oss-120b",
         messages=[
             {
-                "role": "system",
-                "content": system_prompt,
-            },
-            {
                 "role": "user",
-                "content": user_prompt,
-            },
+                "content": "Say hello"
+            }
         ],
-        temperature=0.2,
     )
 
-    return response.choices[0].message.content or ""
+    return response.choices[0].message.content
