@@ -1,5 +1,5 @@
 TITLE: Medication Safety Basics
-PUBLISHER: CareGuide AI Curated Knowledge Base
+PUBLISHER: World Health Organization (WHO)
 URL: https://www.who.int/teams/regulation-prequalification/regulation-and-safety/pharmacovigilance
 CATEGORY: medications
 UPDATED: 2026-10-01

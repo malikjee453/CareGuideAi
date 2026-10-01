@@ -1,5 +1,5 @@
 TITLE: Urgent Health Warning Guidance
-PUBLISHER: CareGuide AI Safety Guidance
+PUBLISHER: World Health Organization (WHO)
 URL: https://www.who.int/news-room/fact-sheets/detail/hypertension
 CATEGORY: emergency
 UPDATED: 2026-10-01
