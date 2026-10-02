@@ -29,21 +29,22 @@ st.markdown(
             margin-right: 0.12rem;
         }
         .cg-name {
-            font-size: 3.05rem;
-            font-weight: 900;
-            letter-spacing: -0.04em;
-            color: #173B5E;
-        }
-        .cg-ai {
-            font-size: 0.92rem;
-            font-weight: 800;
-            letter-spacing: 0.08em;
-            color: #19A39A;
-            vertical-align: super;
-            position: relative;
-            top: -0.55rem;
-            margin-left: 0.05rem;
-        }
+    font-size: 3.2rem;
+    font-weight: 950;
+    letter-spacing: -0.045em;
+    color: #173B5E;
+}
+
+.cg-ai {
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.10em;
+    color: #D28B35;
+    vertical-align: super;
+    position: relative;
+    top: -0.85rem;
+    margin-left: 0.08rem;
+}
     </style>
     """,
     unsafe_allow_html=True,
