@@ -1,4 +1,5 @@
 import html
+from pathlib import Path
 
 import streamlit as st
 
@@ -8,49 +9,71 @@ from rag.pipeline import answer_with_rag, get_knowledge_base_status
 from documents.extractor import extract_text_from_bytes
 from workflows.document_workflow import run_document_workflow
 
-st.set_page_config(page_title=APP_NAME, page_icon="🏥", layout="wide")
+
+LOGO_PATH = Path(__file__).resolve().parent / "assets" / "careguideai.png"
+
+st.set_page_config(
+    page_title=APP_NAME,
+    page_icon=str(LOGO_PATH) if LOGO_PATH.exists() else "🏥",
+    layout="wide",
+)
+
+logo_html = ""
+if LOGO_PATH.exists():
+    import base64
+    logo_b64 = base64.b64encode(LOGO_PATH.read_bytes()).decode("utf-8")
+    logo_html = f'<img class="cg-logo" src="data:image/png;base64,{logo_b64}" />'
+else:
+    logo_html = '<span class="cg-icon">🏥</span>'
 
 st.markdown(
-    """
+    f"""
     <div class="cg-brand">
-        <span class="cg-icon">🏥</span>
+        {logo_html}
         <span class="cg-name">CareGuide</span><span class="cg-ai">AI</span>
     </div>
     <style>
-        .cg-brand {
+        .cg-brand {{
             display: flex;
-            align-items: baseline;
-            gap: 0.22rem;
+            align-items: center;
+            gap: 0.28rem;
             margin: 0.15rem 0 0.15rem 0;
             line-height: 1;
-        }
-        .cg-icon {
+        }}
+        .cg-logo {{
+            width: 54px;
+            height: 54px;
+            object-fit: contain;
+            display: block;
+            margin-right: 0.08rem;
+        }}
+        .cg-icon {{
             font-size: 2.7rem;
             margin-right: 0.12rem;
-        }
-        .cg-name {
-            font-size: 3.05rem;
-            font-weight: 900;
-            letter-spacing: -0.04em;
+        }}
+        .cg-name {{
+            font-size: 3.2rem;
+            font-weight: 950;
+            letter-spacing: -0.045em;
             color: #173B5E;
-        }
-        .cg-ai {
-            font-size: 0.92rem;
+        }}
+        .cg-ai {{
+            font-size: 0.62rem;
             font-weight: 800;
-            letter-spacing: 0.08em;
-            color: #19A39A;
+            letter-spacing: 0.10em;
+            color: #D28B35;
             vertical-align: super;
             position: relative;
-            top: -0.55rem;
-            margin-left: 0.05rem;
-        }
+            top: -0.85rem;
+            margin-left: 0.08rem;
+        }}
     </style>
     """,
     unsafe_allow_html=True,
 )
+
 st.caption(APP_TAGLINE)
 st.info("CareGuide AI provides healthcare information and education. It does not diagnose conditions or replace a qualified healthcare professional.")
-
 st.subheader("Healthcare Q&A")
 question = st.text_area("What would you like to know?", placeholder="Ask a healthcare information question...", height=120)
 requested_language = st.radio("Answer language", ["English", "Urdu"], horizontal=True, help="Choose the language for the answer. Urdu uses Urdu script, not Hindi.")
@@ -118,7 +141,6 @@ if st.button("Ask CareGuide AI", type="primary"):
 st.divider()
 st.subheader("📄 Medical Document Understanding")
 st.caption("Upload a healthcare document and CareGuide AI will explain what the document explicitly says. It will not diagnose conditions or prescribe treatment.")
-
 uploaded_document = st.file_uploader(
     "Upload a medical document",
     type=["pdf", "docx", "txt", "md", "csv"],
@@ -143,7 +165,6 @@ if st.button("Analyze Medical Document", type="secondary"):
                     language=language_code,
                     focus=document_focus,
                 )
-
                 st.markdown("### Document Explanation")
                 if language_code == "urdu":
                     safe_answer = html.escape(result.get("answer", "")).replace("\n", "<br>")
